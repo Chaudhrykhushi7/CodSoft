@@ -1,0 +1,107 @@
+import os
+
+class ToDoList:
+    def __init__(self):
+        self.tasks = []
+
+    def add_task(self, task):
+        self.tasks.append({"task": task, "completed": False})
+        print(f"Task '{task}' added successfully.")
+
+    def view_tasks(self):
+        if not self.tasks:
+            print("\nNo tasks in your To-Do List.")
+        else:
+            print("\nYour To-Do List:")
+            for idx, task in enumerate(self.tasks, 1):
+                status = "Done" if task['completed'] else "Pending"
+                print(f"{idx}. {task['task']} [{status}]")
+
+    def update_task(self, task_num, new_task):
+        if 1 <= task_num <= len(self.tasks):
+            old_task = self.tasks[task_num - 1]['task']
+            self.tasks[task_num - 1]['task'] = new_task
+            print(f"Task '{old_task}' updated to '{new_task}'.")
+        else:
+            print("Invalid task number.")
+
+    def mark_task_complete(self, task_num):
+        if 1 <= task_num <= len(self.tasks):
+            self.tasks[task_num - 1]['completed'] = True
+            print(f"Task '{self.tasks[task_num - 1]['task']}' marked as completed.")
+        else:
+            print("Invalid task number.")
+
+    def delete_task(self, task_num):
+        if 1 <= task_num <= len(self.tasks):
+            removed_task = self.tasks.pop(task_num - 1)
+            print(f"Task '{removed_task['task']}' deleted successfully.")
+        else:
+            print("Invalid task number.")
+
+    def save_tasks(self, filename="todo_list.txt"):
+        with open(filename, 'w') as file:
+            for task in self.tasks:
+                file.write(f"{task['task']},{task['completed']}\n")
+        print(f"Tasks saved to {filename}.")
+
+    def load_tasks(self, filename="todo_list.txt"):
+        if os.path.exists(filename):
+            with open(filename, 'r') as file:
+                for line in file:
+                    task, completed = line.strip().split(',')
+                    self.tasks.append({"task": task, "completed": completed == 'True'})
+            print(f"Tasks loaded from {filename}.")
+        else:
+            print(f"No saved tasks found in {filename}.")
+
+def display_menu():
+    print("\nTo-Do List Application")
+    print("1. View Tasks")
+    print("2. Add Task")
+    print("3. Update Task")
+    print("4. Mark Task as Completed")
+    print("5. Delete Task")
+    print("6. Save Tasks")
+    print("7. Load Tasks")
+    print("8. Exit")
+
+def main():
+    todo_list = ToDoList()
+    
+    while True:
+        display_menu()
+        choice = input("\nEnter your choice (1-8): ")
+
+        if choice == '1':
+            todo_list.view_tasks()
+        elif choice == '2':
+            task = input("Enter the task: ")
+            todo_list.add_task(task)
+        elif choice == '3':
+            todo_list.view_tasks()
+            task_num = int(input("Enter the task number to update: "))
+            new_task = input("Enter the new task description: ")
+            todo_list.update_task(task_num, new_task)
+        elif choice == '4':
+            todo_list.view_tasks()
+            task_num = int(input("Enter the task number to mark as completed: "))
+            todo_list.mark_task_complete(task_num)
+        elif choice == '5':
+            todo_list.view_tasks()
+            task_num = int(input("Enter the task number to delete: "))
+            todo_list.delete_task(task_num)
+        elif choice == '6':
+            filename = input("Enter the filename to save tasks (default: todo_list.txt): ") or "todo_list.txt"
+            todo_list.save_tasks(filename)
+        elif choice == '7':
+            filename = input("Enter the filename to load tasks from (default: todo_list.txt): ") or "todo_list.txt"
+            todo_list.load_tasks(filename)
+        elif choice == '8':
+            print("Exiting the application.")
+            break
+        else:
+            print("Invalid choice. Please choose a valid option.")
+
+if __name__ == "__main__":
+    main()
